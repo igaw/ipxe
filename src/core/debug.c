@@ -157,50 +157,51 @@ struct autocolour {
  * @v stream		Message stream ID
  * @ret colour		Colour ID
  */
-static int dbg_autocolour ( unsigned long stream ) {
-	static struct autocolour acs[ DBGCOL_MAX - DBGCOL_MIN + 1 ];
-	static unsigned long use;
-	unsigned int i;
-	unsigned int oldest;
-	unsigned int oldest_last_used;
+/* static int dbg_autocolour ( unsigned long stream ) { */
+/* 	static struct autocolour acs[ DBGCOL_MAX - DBGCOL_MIN + 1 ]; */
+/* 	static unsigned long use; */
+/* 	unsigned int i; */
+/* 	unsigned int oldest; */
+/* 	unsigned int oldest_last_used; */
 
-	/* Increment usage iteration counter */
-	use++;
+/* 	/\* Increment usage iteration counter *\/ */
+/* 	use++; */
 
-	/* Scan through list for a currently assigned colour */
-	for ( i = 0 ; i < ( sizeof ( acs ) / sizeof ( acs[0] ) ) ; i++ ) {
-		if ( acs[i].stream == stream ) {
-			acs[i].last_used = use;
-			return i;
-		}
-	}
+/* 	/\* Scan through list for a currently assigned colour *\/ */
+/* 	for ( i = 0 ; i < ( sizeof ( acs ) / sizeof ( acs[0] ) ) ; i++ ) { */
+/* 		if ( acs[i].stream == stream ) { */
+/* 			acs[i].last_used = use; */
+/* 			return i; */
+/* 		} */
+/* 	} */
 
-	/* No colour found; evict the oldest from the list */
-	oldest = 0;
-	oldest_last_used = use;
-	for ( i = 0 ; i < ( sizeof ( acs ) / sizeof ( acs[0] ) ) ; i++ ) {
-		if ( acs[i].last_used < oldest_last_used ) {
-			oldest_last_used = acs[i].last_used;
-			oldest = i;
-		}
-	}
-	acs[oldest].stream = stream;
-	acs[oldest].last_used = use;
-	return oldest;
-}
+/* 	/\* No colour found; evict the oldest from the list *\/ */
+/* 	oldest = 0; */
+/* 	oldest_last_used = use; */
+/* 	for ( i = 0 ; i < ( sizeof ( acs ) / sizeof ( acs[0] ) ) ; i++ ) { */
+/* 		if ( acs[i].last_used < oldest_last_used ) { */
+/* 			oldest_last_used = acs[i].last_used; */
+/* 			oldest = i; */
+/* 		} */
+/* 	} */
+/* 	acs[oldest].stream = stream; */
+/* 	acs[oldest].last_used = use; */
+/* 	return oldest; */
+/* } */
 
 /**
  * Select automatic colour for debug messages
  *
  * @v stream		Message stream ID
  */
-void dbg_autocolourise ( unsigned long stream ) {
-
+void dbg_autocolourise ( unsigned long stream __unused) {
+/*
 	if ( DBGCOL_MIN ) {
 		dbg_printf ( "\033[%dm",
 			     ( stream ?
 			       ( DBGCOL_MIN + dbg_autocolour ( stream ) ) : 0));
 	}
+*/
 }
 
 /**
@@ -208,7 +209,9 @@ void dbg_autocolourise ( unsigned long stream ) {
  *
  */
 void dbg_decolourise ( void ) {
-
+/*
 	if ( DBGCOL_MIN )
-		dbg_printf ( "\033[0m" );
+	dbg_printf ( "\033[0m" );
+
+*/
 }

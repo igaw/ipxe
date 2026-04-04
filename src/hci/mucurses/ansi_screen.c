@@ -14,13 +14,13 @@ static void ansiscr_putc(struct _curses_screen *scr, chtype c) __nonnull;
 static unsigned int saved_usage;
 
 static void ansiscr_attrs ( struct _curses_screen *scr, attr_t attrs ) {
-	int bold = ( attrs & A_BOLD );
+//	int bold = ( attrs & A_BOLD );
 	attr_t cpair = PAIR_NUMBER ( attrs );
 
 	if ( scr->attrs != attrs ) {
 		scr->attrs = attrs;
 		/* Reset attributes and set/clear bold as appropriate */
-		printf ( "\033[0;%dm", ( bold ? 1 : 22 ) );
+//		printf ( "\033[0;%dm", ( bold ? 1 : 22 ) );
 		/* Set foreground and background colours */
 		ansicol_set_pair ( cpair );
 	}
@@ -31,9 +31,9 @@ static void ansiscr_reset ( struct _curses_screen *scr ) {
 	scr->attrs = 0;
 	scr->curs_x = 0;
 	scr->curs_y = 0;
-	printf ( "\0330m" );
+//	printf ( "\0330m" );
 	ansicol_set_pair ( CPAIR_DEFAULT );
-	printf ( "\033[2J" );
+//	printf ( "\033[2J" );
 }
 
 static void ansiscr_init ( struct _curses_screen *scr ) {
@@ -48,14 +48,14 @@ static void ansiscr_exit ( struct _curses_screen *scr ) {
 
 static void ansiscr_erase ( struct _curses_screen *scr, attr_t attrs ) {
 	ansiscr_attrs ( scr, attrs );
-	printf ( "\033[2J" );
+//	printf ( "\033[2J" );
 }
 
 static void ansiscr_movetoyx ( struct _curses_screen *scr,
 			       unsigned int y, unsigned int x ) {
 	if ( ( x != scr->curs_x ) || ( y != scr->curs_y ) ) {
 		/* ANSI escape sequence to update cursor position */
-		printf ( "\033[%d;%dH", ( y + 1 ), ( x + 1 ) );
+//		printf ( "\033[%d;%dH", ( y + 1 ), ( x + 1 ) );
 		scr->curs_x = x;
 		scr->curs_y = y;
 	}
@@ -87,8 +87,8 @@ static bool ansiscr_peek ( struct _curses_screen *scr __unused ) {
 }
 
 static void ansiscr_cursor ( struct _curses_screen *scr __unused,
-			     int visibility ) {
-	printf ( "\033[?25%c", ( visibility ? 'h' : 'l' ) );
+			     int visibility __unused) {
+//	printf ( "\033[?25%c", ( visibility ? 'h' : 'l' ) );
 }
 
 SCREEN _ansi_screen = {

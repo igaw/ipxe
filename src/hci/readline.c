@@ -269,7 +269,7 @@ int readline_history ( const char *prompt, const char *prefill,
 		printf ( "%s", prompt );
 
 	/* Ensure cursor is visible */
-	printf ( "\033[?25h" );
+//	printf ( "\033[?25h" );
 
 	/* Initialise editable string */
 	*line = NULL;
