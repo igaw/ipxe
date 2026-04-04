@@ -34,8 +34,10 @@ FILE_LICENCE ( GPL2_OR_LATER_OR_UBDL );
 #include <ipxe/init.h>
 #include <ipxe/uart.h>
 #include <ipxe/console.h>
+#include <ipxe/ansiesc.h>
 #include <ipxe/serial.h>
 #include <ipxe/ns16550.h>
+#include <ipxe/keys.h>
 #include <config/console.h>
 #include <config/serial.h>
 
@@ -84,6 +86,21 @@ struct uart * fixed_serial_console ( void ) {
 	return uart;
 }
 
+#define SERIAL_DUMB 1
+
+#ifdef SERIAL_DUMB
+
+/** Dump serial console ANSI escape sequence handlers */
+static struct ansiesc_handler dumb_serial_ansiesc_handlers[] = {
+	{ 0, NULL }
+};
+
+/** Dump console ANSI escape sequence context */
+static struct ansiesc_context dumb_serial_ansiesc_ctx = {
+	.handlers = dumb_serial_ansiesc_handlers,
+};
+#endif /* !SERIAL_DUMB */
+
 /**
  * Print a character to serial console
  *
@@ -94,6 +111,13 @@ static void serial_putchar ( int character ) {
 	/* Do nothing if we have no UART */
 	if ( ! serial_console )
 		return;
+
+#ifdef SERIAL_DUMB
+	/* Intercept ANSI escape sequences */
+	character = ansiesc_process ( &dumb_serial_ansiesc_ctx, character );
+	if ( character < 0 )
+		return;
+#endif /* !SERIAL_DUMB */
 
 	/* Transmit character */
 	uart_transmit ( serial_console, character );
