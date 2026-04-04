@@ -31,10 +31,12 @@ FILE_LICENCE ( GPL2_OR_LATER_OR_UBDL );
 
 #include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
 #include <ipxe/init.h>
 #include <ipxe/uart.h>
 #include <ipxe/console.h>
 #include <ipxe/serial.h>
+#include <ipxe/lineconsole.h>
 #include <ipxe/ns16550.h>
 #include <config/console.h>
 #include <config/serial.h>
@@ -84,6 +86,57 @@ struct uart * fixed_serial_console ( void ) {
 	return uart;
 }
 
+#ifdef SERIAL_LINEBUF
+#define SERIAL_LINEBUF_LEN 256
+static struct line_console serial_line = {
+	.buffer = NULL,
+	.index = 0,
+	.len = SERIAL_LINEBUF_LEN,
+	.ctx = { .handlers = NULL, .count = 0, .function = 0 }
+};
+
+static void serial_line_init(void) {
+	if  ( ! serial_line.buffer ) {
+		serial_line.buffer = calloc( SERIAL_LINEBUF_LEN, 1 );
+		serial_line.index = 0;
+		serial_line.len = SERIAL_LINEBUF_LEN;
+		memset( &serial_line.ctx, 0, sizeof ( serial_line.ctx ) );
+	}
+}
+
+/*
+ * Filter out escape sequences (e.g., ANSI color codes) before passing to line_putchar.
+ * This simple state machine skips characters between ESC (0x1b) and the end of the sequence.
+ */
+static void serial_line_putchar ( int character ) {
+	static int in_escape = 0;
+	unsigned int i;
+
+	serial_line_init();
+
+	if ( ! in_escape ) {
+		if ( character == 0x1b ) {
+			in_escape = 1;
+			return;
+		}
+
+		if ( ! line_putchar ( &serial_line, character ) )
+			return;
+
+		for (i = 0; i < SERIAL_LINEBUF_LEN && serial_line.buffer[i]; i++) {
+			uart_transmit(serial_console, serial_line.buffer[i]);
+		}
+		uart_transmit(serial_console, '\n');
+		memset(serial_line.buffer, 0, SERIAL_LINEBUF_LEN);
+       } else {
+	       if ( ( character >= 'A' && character <= 'Z' ) ||
+		    ( character >= 'a' && character <= 'z' ) ) {
+		       in_escape = 0;
+	       }
+       }
+}
+#endif
+
 /**
  * Print a character to serial console
  *
@@ -95,8 +148,12 @@ static void serial_putchar ( int character ) {
 	if ( ! serial_console )
 		return;
 
+#ifdef SERIAL_LINEBUF
+	serial_line_putchar( character );
+#else
 	/* Transmit character */
 	uart_transmit ( serial_console, character );
+#endif
 }
 
 /**
