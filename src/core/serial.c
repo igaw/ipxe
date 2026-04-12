@@ -86,20 +86,18 @@ struct uart * fixed_serial_console ( void ) {
 	return uart;
 }
 
-#define SERIAL_DUMB 1
-
 #ifdef SERIAL_DUMB
 
-/** Dump serial console ANSI escape sequence handlers */
+/** Dumb serial console ANSI escape sequence handlers */
 static struct ansiesc_handler dumb_serial_ansiesc_handlers[] = {
 	{ 0, NULL }
 };
 
-/** Dump console ANSI escape sequence context */
+/** Dumb console ANSI escape sequence context */
 static struct ansiesc_context dumb_serial_ansiesc_ctx = {
 	.handlers = dumb_serial_ansiesc_handlers,
 };
-#endif /* !SERIAL_DUMB */
+#endif /* SERIAL_DUMB */
 
 /**
  * Print a character to serial console
@@ -117,7 +115,7 @@ static void serial_putchar ( int character ) {
 	character = ansiesc_process ( &dumb_serial_ansiesc_ctx, character );
 	if ( character < 0 )
 		return;
-#endif /* !SERIAL_DUMB */
+#endif /* SERIAL_DUMB */
 
 	/* Transmit character */
 	uart_transmit ( serial_console, character );
