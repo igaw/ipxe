@@ -54,6 +54,9 @@ PROVIDE_REQUIRING_SYMBOL();
 
 #ifdef CONSOLE_SERIAL
 REQUIRE_OBJECT ( serial );
+#ifdef SERIAL_DUMB
+REQUIRE_OBJECT ( serial_dumb );
+#endif
 #endif
 #ifdef CONSOLE_DIRECT_VGA
 REQUIRE_OBJECT ( video_subr );
