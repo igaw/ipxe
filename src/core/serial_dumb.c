@@ -74,6 +74,9 @@ static void serial_dumb_putchar ( int character ) {
 /**
  * Initialise dumb serial console
  *
+ * Replaces the default serial console putchar with a version that
+ * strips ANSI escape sequences before transmitting.  This runs at
+ * INIT_CONSOLE priority, before any console output takes place.
  */
 static void serial_dumb_init ( void ) {
 	serial_console_driver.putchar = serial_dumb_putchar;
